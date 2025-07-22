@@ -12,30 +12,34 @@ export default function Chat() {
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!input.trim()) return
-
-    const userMessage = { role: 'user', content: input }
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
-    setLoading(true)
-
+    e.preventDefault();
+    if (!input.trim()) return;
+  
+    const userMessage = { role: 'user', content: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setLoading(true);
+  
     try {
-      // Replace this with your actual API route
-      const res = await axios.post('/api/gemini', { prompt: input })
-      const { prompt } = await request.json()
-console.log('Prompt received:', prompt)
-
-      setMessages((prev) => [...prev, { role: 'bot', content: res.data.reply }])
+      const res = await axios.post('/api/gemini', { prompt: input });
+      const { reply } = res.data;
+      console.log('Gemini reply:', reply); // Check if this logs the expected reply
+  
+      setMessages((prev) => [
+        ...prev,
+        { role: 'bot', content: reply },
+      ]);
     } catch (error) {
+      console.error('Error fetching response:', error);
       setMessages((prev) => [
         ...prev,
         { role: 'bot', content: 'Error: Failed to fetch response.' },
-      ])
+      ]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+  
 
   return (
     <div className="flex flex-col h-screen p-4 bg-gray-100">
